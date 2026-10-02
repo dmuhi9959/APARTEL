@@ -26,10 +26,20 @@ body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;display:f
 .clock{font-size:2.2rem;font-weight:bold;color:var(--text-header);line-height:1}
 .date{font-size:0.9rem;color:var(--text-address);margin-top:2px}
 
-.video-container{flex:1;display:flex;justify-content:center;align-items:center;background-color:var(--bg-video);background-size:cover;background-position:center;padding:10px;min-height:0;position:relative}
-#youtubePlayer, #videoPlayer{width:100%;height:100%;border:2px solid var(--accent);border-radius:10px;box-shadow:0 0 20px rgba(255,215,0,0.2)}
-#videoPlayer{object-fit:contain;display:none;}
-#youtubePlayer{object-fit:contain;}
+/* Perubahan: Paksa memenuhi layar tanpa border dan tanpa padding */
+.video-container{flex:1;position:relative;background-color:var(--bg-video);background-size:cover;background-position:center;min-height:0;overflow:hidden}
+#youtubePlayer, #videoPlayer{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    border:none;
+}
+/* object-fit: cover membuat video memenuhi layar, jika kelebihan akan terpotong rapi */
+#videoPlayer{object-fit:cover;display:none;}
+/* Untuk iframe YouTube, kita pakai scale agar benar-benar nge-cover tanpa hitam */
+#youtubePlayer{transform: scale(1.05); transform-origin: center;}
 
 .footer{flex-shrink:0;background:var(--bg-ticker);border-top:2px solid var(--accent);padding:15px 0;overflow:hidden;display:flex}
 .ticker-wrap{display:flex;animation:scrollText 60s linear infinite;width:max-content}
@@ -130,7 +140,6 @@ db.ref('apartemen/settings').on('value', (snap) => {
         let wp = snap.val().wallpaper;
         if(wp) document.getElementById('videoContainer').style.backgroundImage = `url('${wp}')`;
         
-        // Running Text Seamless (Dua bagian yang menyambung)
         let t = snap.val().ticker || 'Selamat Datang';
         let textHtml = `<div class="ticker-text"><span>★</span> ${t} </div>`;
         document.getElementById('aptTicker').innerHTML = textHtml + textHtml;
