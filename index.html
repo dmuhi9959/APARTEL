@@ -101,7 +101,8 @@ body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;height:10
 </header>
 
 <div class="video-container" id="videoContainer">
-    <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen; encrypted-media" allowfullscreen style="display:none;"></iframe>
+    <!-- Tambahan allow="autoplay" di iframe -->
+    <iframe id="youtubePlayer" src="" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen style="display:none;"></iframe>
     <video id="videoPlayer" autoplay playsinline></video>
 </div>
 
@@ -213,25 +214,23 @@ function playCurrentVideo() {
         
         let muteParam = hasStarted ? '0' : '1';
         
-        // Kumpulkan semua ID YouTube
         let ytIds = videoList.filter(v => v.type === 'youtube').map(v => v.id);
         let playlistStr = ytIds.join(',');
         
-        // Gunakan parameter playlist dan loop bawaan YouTube (Tanpa origin & enablejsapi agar stabil di APK Android)
-        ytIframe.src = `https://www.youtube.com/embed/${item.id}?playlist=${playlistStr}&autoplay=1&mute=${muteParam}&controls=0&modestbranding=1&rel=0&playsinline=1&loop=1`;
+        // URL disederhanakan agar stabil di Android
+        ytIframe.src = `https://www.youtube.com/embed/${item.id}?playlist=${playlistStr}&autoplay=1&mute=${muteParam}&loop=1&controls=0&rel=0&playsinline=1`;
         
     } else if(item.type === 'mp4') {
         ytIframe.style.display = 'none';
         ytIframe.src = '';
         mp4Player.style.display = 'block';
-        mp4Player.muted = !hasStarted; // Set mute status sebelum play
+        mp4Player.muted = !hasStarted;
         mp4Player.src = item.url;
         mp4Player.load();
         mp4Player.play().catch(e => console.log("Menunggu klik untuk suara..."));
     }
 }
 
-// Deteksi video MP4 selesai
 mp4Player.addEventListener('ended', () => {
     currentVideoIdx = (currentVideoIdx + 1) % videoList.length;
     playCurrentVideo();
@@ -245,7 +244,6 @@ function startDisplay() {
     document.getElementById('startOverlay').style.display = 'none';
     hasStarted = true; 
     
-    // Reload video saat ini agar suara langsung aktif (mute=0)
     playCurrentVideo();
 }
 </script>
