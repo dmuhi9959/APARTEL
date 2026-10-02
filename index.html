@@ -213,20 +213,20 @@ function playCurrentVideo() {
         
         let muteParam = hasStarted ? '0' : '1';
         
-        // Ambil semua ID YouTube untuk dijadikan playlist agar loop beruntun tanpa henti
+        // Kumpulkan semua ID YouTube
         let ytIds = videoList.filter(v => v.type === 'youtube').map(v => v.id);
         let playlistStr = ytIds.join(',');
         
-        // Tambahkan parameter origin agar Android mengizinkan komunikasi status video
-        let origin = window.location.origin;
-        ytIframe.src = `https://www.youtube.com/embed/${item.id}?playlist=${playlistStr}&autoplay=1&mute=${muteParam}&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=1&loop=1&origin=${origin}`;
+        // Gunakan parameter playlist dan loop bawaan YouTube (Tanpa origin & enablejsapi agar stabil di APK Android)
+        ytIframe.src = `https://www.youtube.com/embed/${item.id}?playlist=${playlistStr}&autoplay=1&mute=${muteParam}&controls=0&modestbranding=1&rel=0&playsinline=1&loop=1`;
+        
     } else if(item.type === 'mp4') {
         ytIframe.style.display = 'none';
         ytIframe.src = '';
         mp4Player.style.display = 'block';
+        mp4Player.muted = !hasStarted; // Set mute status sebelum play
         mp4Player.src = item.url;
         mp4Player.load();
-        mp4Player.muted = !hasStarted;
         mp4Player.play().catch(e => console.log("Menunggu klik untuk suara..."));
     }
 }
@@ -235,21 +235,6 @@ function playCurrentVideo() {
 mp4Player.addEventListener('ended', () => {
     currentVideoIdx = (currentVideoIdx + 1) % videoList.length;
     playCurrentVideo();
-});
-
-// Deteksi video YouTube selesai (Terbantu oleh parameter origin)
-window.addEventListener('message', (event) => {
-    try {
-        let data = JSON.parse(event.data);
-        // 0 = Ended, 1 = Playing, 2 = Paused
-        if(data.event === 'onStateChange' && data.info === 0) {
-            currentVideoIdx = (currentVideoIdx + 1) % videoList.length;
-            // Jeda 1.5 detik agar tidak crash saat pindah video
-            setTimeout(() => {
-                playCurrentVideo();
-            }, 1500);
-        }
-    } catch(e) {}
 });
 
 function startDisplay() {
