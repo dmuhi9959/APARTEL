@@ -52,6 +52,10 @@ h1,h3{color:#ffd700;margin-bottom:15px}
             <input type="color" id="colorBgMain" value="#000000">
         </div>
         <div class="color-row">
+            <label>Warna Background Area Video</label>
+            <input type="color" id="colorBgVideo" value="#000000">
+        </div>
+        <div class="color-row">
             <label>Warna Teks Nama/Jam</label>
             <input type="color" id="colorTextHeader" value="#ffd700">
         </div>
@@ -113,6 +117,7 @@ db.ref('apartemen/settings').on('value', (snap) => {
 db.ref('apartemen/colors').on('value', (snap) => {
     if(snap.exists()) {
         document.getElementById('colorBgMain').value = snap.val().bg_main || '#000000';
+        document.getElementById('colorBgVideo').value = snap.val().bg_video || '#000000';
         document.getElementById('colorTextHeader').value = snap.val().text_header || '#ffd700';
         document.getElementById('colorAddress').value = snap.val().text_address || '#cccccc';
         document.getElementById('colorAccent').value = snap.val().accent || '#ffd700';
@@ -148,6 +153,7 @@ function saveSettings() {
 function saveColors() {
     let colors = {
         bg_main: document.getElementById('colorBgMain').value,
+        bg_video: document.getElementById('colorBgVideo').value,
         text_header: document.getElementById('colorTextHeader').value,
         text_address: document.getElementById('colorAddress').value,
         accent: document.getElementById('colorAccent').value,
