@@ -18,7 +18,9 @@
 body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;display:flex;flex-direction:column}
 
 .header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:10px 30px;background:transparent;border-bottom:2px solid var(--accent)}
-.header-left{text-align:left; max-width:60%;}
+.header-left{display:flex;align-items:center;gap:15px;max-width:65%;}
+#aptLogo{height:60px;width:auto;display:none;object-fit:contain;}
+.text-block{text-align:left;}
 .apt-name{font-size:1.4rem;font-weight:bold;color:var(--text-header);letter-spacing:1px;text-shadow:0 0 10px rgba(255,215,0,0.3)}
 .apt-address{font-size:0.85rem;color:var(--text-address);margin-top:5px;}
 
@@ -26,30 +28,14 @@ body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;display:f
 .clock{font-size:2.2rem;font-weight:bold;color:var(--text-header);line-height:1}
 .date{font-size:0.9rem;color:var(--text-address);margin-top:2px}
 
-/* Container memotong kelebihan video */
 .video-container{flex:1;position:relative;background-color:var(--bg-video);background-size:cover;background-position:center;min-height:0;overflow:hidden}
 
-/* Untuk Video MP4 */
 #videoPlayer{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:none;
+    position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:none;
 }
 
-/* TRIK IFROME YOUTUBE: Diperbesar 150% agar pinggiran hitam keluar dari layar */
 #youtubePlayer{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:150%;
-    height:150%;
-    transform:translate(-50%, -50%);
-    border:none;
-    pointer-events:none;
+    position:absolute;top:50%;left:50%;width:200%;height:200%;transform:translate(-50%, -50%);border:none;pointer-events:none;
 }
 
 .footer{flex-shrink:0;background:var(--bg-ticker);border-top:2px solid var(--accent);padding:15px 0;overflow:hidden;display:flex}
@@ -74,8 +60,11 @@ body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;display:f
 
 <header class="header">
     <div class="header-left">
-        <div class="apt-name" id="aptName">NAMA APARTEL</div>
-        <div class="apt-address" id="aptAddress">Alamat</div>
+        <img id="aptLogo" src="">
+        <div class="text-block">
+            <div class="apt-name" id="aptName">NAMA APARTEL</div>
+            <div class="apt-address" id="aptAddress">Alamat</div>
+        </div>
     </div>
     <div class="header-right">
         <div class="clock" id="clockTime">00:00</div>
@@ -143,13 +132,23 @@ db.ref('apartemen/colors').on('value', (snap) => {
     }
 });
 
-// 3. Load Teks, Nama, & Wallpaper
+// 3. Load Teks, Nama, Logo, & Wallpaper
 db.ref('apartemen/settings').on('value', (snap) => {
     if(snap.exists()) {
         document.getElementById('aptName').innerText = snap.val().nama || 'Nama Apartel';
         document.getElementById('aptAddress').innerText = snap.val().alamat || 'Alamat';
+        
         let wp = snap.val().wallpaper;
         if(wp) document.getElementById('videoContainer').style.backgroundImage = `url('${wp}')`;
+        
+        let logoUrl = snap.val().logo;
+        let logoEl = document.getElementById('aptLogo');
+        if(logoUrl) {
+            logoEl.src = logoUrl;
+            logoEl.style.display = 'block';
+        } else {
+            logoEl.style.display = 'none';
+        }
         
         let t = snap.val().ticker || 'Selamat Datang';
         let textHtml = `<div class="ticker-text"><span>★</span> ${t} </div>`;
