@@ -17,16 +17,16 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
 body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;height:100dvh;display:flex;flex-direction:column}
 
-.header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:clamp(5px, 1.5vw, 10px) clamp(10px, 3vw, 30px);background:transparent;border-bottom:2px solid var(--accent)}
-.header-left{display:flex;align-items:center;gap:10px;max-width:100%;}
-#aptLogo{height:clamp(35px, 8vw, 60px);width:auto;display:none;object-fit:contain;}
-.text-block{text-align:left;}
-.apt-name{font-size:clamp(0.9rem, 3vw, 1.4rem);font-weight:bold;color:var(--text-header);letter-spacing:1px;text-shadow:0 0 10px rgba(255,215,0,0.3)}
-.apt-address{font-size:clamp(0.65rem, 2vw, 0.85rem);color:var(--text-address);margin-top:3px;}
+.header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:clamp(5px, 1.5vw, 10px) clamp(10px, 3vw, 30px);background:transparent;border-bottom:2px solid var(--accent)}
+.header-left{display:flex;align-items:center;gap:10px;width:60%; overflow:hidden;}
+#aptLogo{height:clamp(35px, 8vw, 60px);width:auto;display:none;object-fit:contain; flex-shrink:0;}
+.text-block{text-align:left; overflow:hidden; min-width:0;}
+.apt-name{font-size:clamp(0.8rem, 3vw, 1.4rem);font-weight:bold;color:var(--text-header);letter-spacing:1px;text-shadow:0 0 10px rgba(255,215,0,0.3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.apt-address{font-size:clamp(0.6rem, 2vw, 0.85rem);color:var(--text-address);margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
-.header-right{text-align:right}
-.clock{font-size:clamp(1rem, 4vw, 2.2rem);font-weight:bold;color:var(--text-header);line-height:1}
-.date{font-size:clamp(0.65rem, 2vw, 0.9rem);color:var(--text-address);margin-top:2px}
+.header-right{text-align:right; width:40%; flex-shrink:0;}
+.clock{font-size:clamp(0.9rem, 4vw, 2.2rem);font-weight:bold;color:var(--text-header);line-height:1}
+.date{font-size:clamp(0.6rem, 2vw, 0.9rem);color:var(--text-address);margin-top:2px}
 
 .video-container{flex:1;position:relative;background-color:var(--bg-video);background-size:cover;background-position:center;min-height:0;overflow:hidden}
 
@@ -40,11 +40,10 @@ body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;height:10
 
 .footer{flex-shrink:0;background:var(--bg-ticker);border-top:2px solid var(--accent);padding:clamp(8px, 1.5vw, 15px) 0;overflow:hidden;display:flex}
 .ticker-wrap{display:flex;animation:scrollText 60s linear infinite;width:max-content}
-.ticker-text{font-size:clamp(0.8rem, 2.5vw, 1.4rem);color:var(--text-ticker);font-weight:bold;padding-right:50px;white-space:nowrap}
+.ticker-text{font-size:clamp(0.7rem, 2.5vw, 1.4rem);color:var(--text-ticker);font-weight:bold;padding-right:50px;white-space:nowrap}
 .ticker-text span{color:var(--accent);margin-right:50px}
 @keyframes scrollText { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
 
-/* Overlay Fullscreen */
 #startOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;cursor:pointer;text-align:center;padding:20px}
 #startOverlay h2{color:var(--text-header);font-size:clamp(1.5rem, 5vw, 2.5rem);margin-bottom:20px}
 #startOverlay p{color:#ccc;font-size:clamp(0.8rem, 3vw, 1.2rem)}
@@ -209,22 +208,17 @@ window.addEventListener('message', (event) => {
 });
 
 function startDisplay() {
-    // 1. Masuk ke Mode Fullscreen
     let elem = document.documentElement;
     if (elem.requestFullscreen) {
         elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) { /* Safari */
+    } else if (elem.webkitRequestFullscreen) { 
         elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE11 */
-        elem.msRequestFullscreen();
     }
 
-    // 2. Kunci Orientasi Layar ke Landscape (jika didukung HP/TV)
     if (screen.orientation && screen.orientation.lock) {
         screen.orientation.lock('landscape').catch(e => console.log("Orientation lock tidak didukung di perangkat ini."));
     }
 
-    // 3. Hilangkan overlay dan mainkan suara
     document.getElementById('startOverlay').style.display = 'none';
     
     if(mp4Player.style.display !== 'none') {
