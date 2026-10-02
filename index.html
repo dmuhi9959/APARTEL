@@ -26,20 +26,31 @@ body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;display:f
 .clock{font-size:2.2rem;font-weight:bold;color:var(--text-header);line-height:1}
 .date{font-size:0.9rem;color:var(--text-address);margin-top:2px}
 
-/* Perubahan: Paksa memenuhi layar tanpa border dan tanpa padding */
+/* Container memotong kelebihan video */
 .video-container{flex:1;position:relative;background-color:var(--bg-video);background-size:cover;background-position:center;min-height:0;overflow:hidden}
-#youtubePlayer, #videoPlayer{
+
+/* Untuk Video MP4 */
+#videoPlayer{
     position:absolute;
     top:0;
     left:0;
     width:100%;
     height:100%;
-    border:none;
+    object-fit:cover;
+    display:none;
 }
-/* object-fit: cover membuat video memenuhi layar, jika kelebihan akan terpotong rapi */
-#videoPlayer{object-fit:cover;display:none;}
-/* Untuk iframe YouTube, kita pakai scale agar benar-benar nge-cover tanpa hitam */
-#youtubePlayer{transform: scale(1.05); transform-origin: center;}
+
+/* TRIK IFROME YOUTUBE: Diperbesar 150% agar pinggiran hitam keluar dari layar */
+#youtubePlayer{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:150%;
+    height:150%;
+    transform:translate(-50%, -50%);
+    border:none;
+    pointer-events:none;
+}
 
 .footer{flex-shrink:0;background:var(--bg-ticker);border-top:2px solid var(--accent);padding:15px 0;overflow:hidden;display:flex}
 .ticker-wrap{display:flex;animation:scrollText 60s linear infinite;width:max-content}
@@ -73,7 +84,7 @@ body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;display:f
 </header>
 
 <div class="video-container" id="videoContainer">
-    <iframe id="youtubePlayer" src="" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen style="display:none;"></iframe>
+    <iframe id="youtubePlayer" src="" allow="autoplay; fullscreen; encrypted-media" allowfullscreen style="display:none;"></iframe>
     <video id="videoPlayer" autoplay playsinline></video>
 </div>
 
