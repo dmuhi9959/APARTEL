@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Apartemen</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#1a1a2e;color:#fff;padding:20px;max-width:600px;margin:0 auto}
+h1,h3{color:#ffd700;margin-bottom:15px}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;font-size:0.8rem;color:#aaa;margin-bottom:5px}
+.form-group input, .form-group textarea{width:100%;padding:12px;background:#16213e;border:1px solid #0f3460;border-radius:8px;color:#fff;font-size:1rem;font-family:inherit}
+.btn{width:100%;padding:14px;background:#ffd700;color:#000;border:none;border-radius:8px;font-size:1rem;font-weight:bold;cursor:pointer;margin-top:10px}
+.btn-red{background:#e94560;color:#fff}
+.card{background:#16213e;padding:15px;border-radius:10px;margin-bottom:20px;border:1px solid #0f3460}
+video{width:100%;border-radius:8px;margin-top:10px}
+</style>
+</head>
+<body>
+    <h1><i class="fas fa-building"></i> Dashboard Apartemen</h1>
+    
+    <div class="card">
+        <h3><i class="fas fa-cog"></i> Pengaturan Layar</h3>
+        <div class="form-group">
+            <label>Nama Apartemen / Hotel</label>
+            <input id="aptName" placeholder="Contoh: Grand Residence Apartment">
+        </div>
+        <div class="form-group">
+            <label>Alamat</label>
+            <input id="aptAddress" placeholder="Contoh: Jl. Sudirman No. 123, Jakarta">
+        </div>
+        <div class="form-group">
+            <label>Teks Berjalan (Running Text)</label>
+            <textarea id="aptTicker" rows="3" placeholder="Contoh: Selamat datang di Grand Residence. Jangan lupa bayar cicilan sebelum tanggal 10."></textarea>
+        </div>
+        <button class="btn" onclick="saveSettings()"><i class="fas fa-save"></i> Simpan Pengaturan</button>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-film"></i> Daftar Video (MP4)</h3>
+        <p style="font-size:0.75rem;color:#aaa;margin-bottom:10px;">Masukkan link video format .mp4 langsung. Contoh: https://website.com/video.mp4</p>
+        <div class="form-group">
+            <label>URL Video Baru</label>
+            <input id="videoUrl" placeholder="https://... .mp4">
+        </div>
+        <button class="btn" onclick="addVideo()"><i class="fas fa-plus"></i> Tambah Video</button>
+        <div id="videoList" style="margin-top:15px;"></div>
+    </div>
+
+<script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDlNDaftpdvCvtCq3S9JjBHileRQnDaZAY", // Ganti jika punya firebase lain
+  authDomain: "robot-pintar-7b1a3.firebaseapp.com",
+  databaseURL: "https://robot-pintar-7b1a3-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "robot-pintar-7b1a3",
+  storageBucket: "robot-pintar-7b1a3.firebasestorage.app",
+  messagingSenderId: "908302592700",
+  appId: "1:908302592700:web:0cd39ac0dcaaaa4704feb9"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Load Data
+db.ref('apartemen/settings').on('value', (snap) => {
+    if(snap.exists()) {
+        document.getElementById('aptName').value = snap.val().nama || '';
+        document.getElementById('aptAddress').value = snap.val().alamat || '';
+        document.getElementById('aptTicker').value = snap.val().ticker || '';
+    }
+});
+
+db.ref('apartemen/videos').on('value', (snap) => {
+    let html = '';
+    if(snap.exists()) {
+        snap.forEach(c => {
+            let url = c.val().url;
+            html += `<div style="background:#0f3460; padding:10px; border-radius:5px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.8rem; word-break:break-all; width:80%;">${url}</span>
+                        <button class="btn-red" style="width:auto; padding:5px 10px; font-size:0.7rem;" onclick="deleteVideo('${c.key}')">Hapus</button>
+                     </div>`;
+        });
+    } else {
+        html = '<p style="color:#aaa; font-size:0.8rem;">Belum ada video.</p>';
+    }
+    document.getElementById('videoList').innerHTML = html;
+});
+
+function saveSettings() {
+    let nama = document.getElementById('aptName').value;
+    let alamat = document.getElementById('aptAddress').value;
+    let ticker = document.getElementById('aptTicker').value;
+    db.ref('apartemen/settings').set({ nama, alamat, ticker }).then(() => alert("Pengaturan tersimpan!"));
+}
+
+function addVideo() {
+    let url = document.getElementById('videoUrl').value;
+    if(!url) return alert("Masukkan URL video!");
+    db.ref('apartemen/videos').push({ url: url });
+    document.getElementById('videoUrl').value = '';
+}
+
+function deleteVideo(id) {
+    if(confirm("Hapus video ini?")) db.ref('apartemen/videos/' + id).remove();
+}
+</script>
+</body>
+</html>
