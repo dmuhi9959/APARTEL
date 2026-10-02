@@ -17,40 +17,73 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
 body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;height:100dvh;display:flex;flex-direction:column}
 
-.header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:clamp(5px, 1.5vw, 10px) clamp(10px, 3vw, 30px);background:transparent;border-bottom:2px solid var(--accent)}
-.header-left{display:flex;align-items:center;gap:10px;width:60%; overflow:hidden;}
-#aptLogo{height:clamp(35px, 8vw, 60px);width:auto;display:none;object-fit:contain; flex-shrink:0;}
-.text-block{text-align:left; overflow:hidden; min-width:0;}
-.apt-name{font-size:clamp(0.8rem, 3vw, 1.4rem);font-weight:bold;color:var(--text-header);letter-spacing:1px;text-shadow:0 0 10px rgba(255,215,0,0.3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.apt-address{font-size:clamp(0.6rem, 2vw, 0.85rem);color:var(--text-address);margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+/* HEADER PAKAI GRID AGAR TIDAK BRANTAKAN */
+.header{
+  flex-shrink:0;
+  display:grid;
+  grid-template-columns: 1fr auto; /* Kiri memenuhi sisa, Kanan ukuran otomatis */
+  align-items:center;
+  gap:15px;
+  padding:clamp(5px, 1.5vw, 10px) clamp(10px, 3vw, 30px);
+  background:transparent;
+  border-bottom:2px solid var(--accent);
+}
+.header-left{display:flex;align-items:center;gap:10px;min-width:0;} /* min-width:0 wajib agar teks bisa terpotong */
+#aptLogo{height:clamp(30px, 8vw, 60px);width:auto;display:none;object-fit:contain;flex-shrink:0;}
+.text-block{min-width:0;} /* Wajib agar truncation bekerja */
+.apt-name{
+  font-size:clamp(0.8rem, 3vw, 1.4rem);
+  font-weight:bold;color:var(--text-header);
+  letter-spacing:1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis; /* Memotong teks panjang dengan ... */
+}
+.apt-address{
+  font-size:clamp(0.6rem, 2vw, 0.85rem);
+  color:var(--text-address);margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
 
-.header-right{text-align:right; width:40%; flex-shrink:0;}
+.header-right{text-align:right;}
 .clock{font-size:clamp(0.9rem, 4vw, 2.2rem);font-weight:bold;color:var(--text-header);line-height:1}
 .date{font-size:clamp(0.6rem, 2vw, 0.9rem);color:var(--text-address);margin-top:2px}
 
+/* VIDEO FULLSCREEN TANPA HITAM */
 .video-container{flex:1;position:relative;background-color:var(--bg-video);background-size:cover;background-position:center;min-height:0;overflow:hidden}
+#videoPlayer{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:none;}
+#youtubePlayer{position:absolute;top:50%;left:50%;width:200%;height:200%;transform:translate(-50%, -50%);border:none;pointer-events:none;}
 
-#videoPlayer{
-    position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:none;
-}
-
-#youtubePlayer{
-    position:absolute;top:50%;left:50%;width:200%;height:200%;transform:translate(-50%, -50%);border:none;pointer-events:none;
-}
-
+/* RUNNING TEXT */
 .footer{flex-shrink:0;background:var(--bg-ticker);border-top:2px solid var(--accent);padding:clamp(8px, 1.5vw, 15px) 0;overflow:hidden;display:flex}
 .ticker-wrap{display:flex;animation:scrollText 60s linear infinite;width:max-content}
 .ticker-text{font-size:clamp(0.7rem, 2.5vw, 1.4rem);color:var(--text-ticker);font-weight:bold;padding-right:50px;white-space:nowrap}
 .ticker-text span{color:var(--accent);margin-right:50px}
 @keyframes scrollText { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
 
+/* OVERLAY MULAI */
 #startOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:999;cursor:pointer;text-align:center;padding:20px}
 #startOverlay h2{color:var(--text-header);font-size:clamp(1.5rem, 5vw, 2.5rem);margin-bottom:20px}
 #startOverlay p{color:#ccc;font-size:clamp(0.8rem, 3vw, 1.2rem)}
 .btn-start{margin-top:30px;padding:12px 30px;background:var(--accent);color:#000;font-size:clamp(0.9rem, 3vw, 1.2rem);font-weight:bold;border:none;border-radius:50px;cursor:pointer;}
+
+/* PERINGATAN PUTAR HP (Muncul jika HP tegak) */
+#rotateWarning{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+#rotateWarning i{font-size:4rem;color:var(--accent);margin-bottom:20px;animation:rotateIcon 2s infinite}
+#rotateWarning h2{color:#fff;font-size:1.5rem}
+#rotateWarning p{color:#ccc;margin-top:10px}
+@keyframes rotateIcon { 0%, 100% {transform:rotate(0deg)} 50% {transform:rotate(90deg)} }
+@media screen and (orientation: portrait) {
+  #rotateWarning { display: flex; }
+}
 </style>
 </head>
 <body>
+
+<!-- Peringatan Putar HP -->
+<div id="rotateWarning">
+    <i class="fas fa-mobile-alt"></i>
+    <h2>Putar HP ke Mode Landscape</h2>
+    <p>Putar perangkat Anda untuk melihat tampilan display.</p>
+</div>
 
 <div id="startOverlay" onclick="startDisplay()">
     <h2>SELAMAT DATANG</h2>
@@ -83,6 +116,9 @@ body{background:var(--bg-main);color:#fff;overflow:hidden;height:100vh;height:10
         <div class="ticker-text"><span>★</span> Memuat teks... </div>
     </div>
 </footer>
+
+<!-- Tambahkan FontAwesome untuk ikon HP -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-database-compat.js"></script>
@@ -209,15 +245,8 @@ window.addEventListener('message', (event) => {
 
 function startDisplay() {
     let elem = document.documentElement;
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) { 
-        elem.webkitRequestFullscreen();
-    }
-
-    if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('landscape').catch(e => console.log("Orientation lock tidak didukung di perangkat ini."));
-    }
+    if (elem.requestFullscreen) elem.requestFullscreen();
+    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
 
     document.getElementById('startOverlay').style.display = 'none';
     
