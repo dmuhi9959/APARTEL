@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Apartemen</title>
+<title>Dashboard Apartel</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
@@ -13,37 +13,64 @@ h1,h3{color:#ffd700;margin-bottom:15px}
 .form-group label{display:block;font-size:0.8rem;color:#aaa;margin-bottom:5px}
 .form-group input, .form-group textarea{width:100%;padding:12px;background:#16213e;border:1px solid #0f3460;border-radius:8px;color:#fff;font-size:1rem;font-family:inherit}
 .btn{width:100%;padding:14px;background:#ffd700;color:#000;border:none;border-radius:8px;font-size:1rem;font-weight:bold;cursor:pointer;margin-top:10px}
-.btn-red{background:#e94560;color:#fff}
+.btn-red{background:#e94560;color:#fff;padding:5px 10px;font-size:0.75rem;width:auto;border-radius:5px;border:none;cursor:pointer}
 .card{background:#16213e;padding:15px;border-radius:10px;margin-bottom:20px;border:1px solid #0f3460}
-video{width:100%;border-radius:8px;margin-top:10px}
+.color-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.color-row label{font-size:0.9rem;color:#ccc}
+.color-row input[type="color"]{width:50px;height:40px;border:none;background:none;cursor:pointer}
+.video-item{background:#0f3460;padding:10px;border-radius:5px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;word-break:break-all}
 </style>
 </head>
 <body>
-    <h1><i class="fas fa-building"></i> Dashboard Apartemen</h1>
+    <h1><i class="fas fa-building"></i> Dashboard Apartel</h1>
     
     <div class="card">
         <h3><i class="fas fa-cog"></i> Pengaturan Layar</h3>
         <div class="form-group">
-            <label>Nama Apartemen / Hotel</label>
-            <input id="aptName" placeholder="Contoh: Grand Residence Apartment">
+            <label>Nama Apartemen</label>
+            <input id="aptName" placeholder="Contoh: Red Dragon Apartel">
         </div>
         <div class="form-group">
             <label>Alamat</label>
-            <input id="aptAddress" placeholder="Contoh: Jl. Sudirman No. 123, Jakarta">
+            <input id="aptAddress" placeholder="Contoh: Jl. Bharata No 123">
         </div>
         <div class="form-group">
             <label>Teks Berjalan (Running Text)</label>
-            <textarea id="aptTicker" rows="3" placeholder="Contoh: Selamat datang di Grand Residence. Jangan lupa bayar cicilan sebelum tanggal 10."></textarea>
+            <textarea id="aptTicker" rows="3" placeholder="Contoh: Selamat datang..."></textarea>
         </div>
         <button class="btn" onclick="saveSettings()"><i class="fas fa-save"></i> Simpan Pengaturan</button>
     </div>
 
     <div class="card">
-        <h3><i class="fas fa-film"></i> Daftar Video (MP4)</h3>
-        <p style="font-size:0.75rem;color:#aaa;margin-bottom:10px;">Masukkan link video format .mp4 langsung. Contoh: https://website.com/video.mp4</p>
+        <h3><i class="fas fa-palette"></i> Pengaturan Warna</h3>
+        <div class="color-row">
+            <label>Background Utama</label>
+            <input type="color" id="colorBgMain" value="#000000">
+        </div>
+        <div class="color-row">
+            <label>Warna Teks Nama/Jam</label>
+            <input type="color" id="colorTextHeader" value="#ffd700">
+        </div>
+        <div class="color-row">
+            <label>Warna Border/Garis</label>
+            <input type="color" id="colorAccent" value="#ffd700">
+        </div>
+        <div class="color-row">
+            <label>Background Running Text</label>
+            <input type="color" id="colorBgTicker" value="#0a0a0a">
+        </div>
+        <div class="color-row">
+            <label>Warna Teks Berjalan</label>
+            <input type="color" id="colorTextTicker" value="#ffffff">
+        </div>
+        <button class="btn" onclick="saveColors()"><i class="fas fa-save"></i> Simpan Warna</button>
+    </div>
+
+    <div class="card">
+        <h3><i class="fab fa-youtube"></i> Daftar Video YouTube</h3>
         <div class="form-group">
-            <label>URL Video Baru</label>
-            <input id="videoUrl" placeholder="https://... .mp4">
+            <label>URL YouTube (Video biasa / Shorts)</label>
+            <input id="videoUrl" placeholder="https://youtube.com/watch?v=...">
         </div>
         <button class="btn" onclick="addVideo()"><i class="fas fa-plus"></i> Tambah Video</button>
         <div id="videoList" style="margin-top:15px;"></div>
@@ -53,7 +80,7 @@ video{width:100%;border-radius:8px;margin-top:10px}
 <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-database-compat.js"></script>
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyDlNDaftpdvCvtCq3S9JjBHileRQnDaZAY", // Ganti jika punya firebase lain
+  apiKey: "AIzaSyDlNDaftpdvCvtCq3S9JjBHileRQnDaZAY",
   authDomain: "robot-pintar-7b1a3.firebaseapp.com",
   databaseURL: "https://robot-pintar-7b1a3-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "robot-pintar-7b1a3",
@@ -64,7 +91,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Load Data
+// Load Settings
 db.ref('apartemen/settings').on('value', (snap) => {
     if(snap.exists()) {
         document.getElementById('aptName').value = snap.val().nama || '';
@@ -73,14 +100,25 @@ db.ref('apartemen/settings').on('value', (snap) => {
     }
 });
 
+// Load Colors
+db.ref('apartemen/colors').on('value', (snap) => {
+    if(snap.exists()) {
+        document.getElementById('colorBgMain').value = snap.val().bg_main || '#000000';
+        document.getElementById('colorTextHeader').value = snap.val().text_header || '#ffd700';
+        document.getElementById('colorAccent').value = snap.val().accent || '#ffd700';
+        document.getElementById('colorBgTicker').value = snap.val().bg_ticker || '#0a0a0a';
+        document.getElementById('colorTextTicker').value = snap.val().text_ticker || '#ffffff';
+    }
+});
+
+// Load Videos
 db.ref('apartemen/videos').on('value', (snap) => {
     let html = '';
     if(snap.exists()) {
         snap.forEach(c => {
-            let url = c.val().url;
-            html += `<div style="background:#0f3460; padding:10px; border-radius:5px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.8rem; word-break:break-all; width:80%;">${url}</span>
-                        <button class="btn-red" style="width:auto; padding:5px 10px; font-size:0.7rem;" onclick="deleteVideo('${c.key}')">Hapus</button>
+            html += `<div class="video-item">
+                        <span>${c.val().url}</span>
+                        <button class="btn-red" onclick="deleteVideo('${c.key}')">Hapus</button>
                      </div>`;
         });
     } else {
@@ -94,6 +132,17 @@ function saveSettings() {
     let alamat = document.getElementById('aptAddress').value;
     let ticker = document.getElementById('aptTicker').value;
     db.ref('apartemen/settings').set({ nama, alamat, ticker }).then(() => alert("Pengaturan tersimpan!"));
+}
+
+function saveColors() {
+    let colors = {
+        bg_main: document.getElementById('colorBgMain').value,
+        text_header: document.getElementById('colorTextHeader').value,
+        accent: document.getElementById('colorAccent').value,
+        bg_ticker: document.getElementById('colorBgTicker').value,
+        text_ticker: document.getElementById('colorTextTicker').value
+    };
+    db.ref('apartemen/colors').set(colors).then(() => alert("Warna tersimpan!"));
 }
 
 function addVideo() {
