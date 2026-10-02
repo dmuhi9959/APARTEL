@@ -31,6 +31,10 @@ h1,h3{color:#ffd700;margin-bottom:15px}
             <input id="aptName" placeholder="Contoh: Red Dragon Apartel">
         </div>
         <div class="form-group">
+            <label>URL Logo (Gambar di sebelah nama)</label>
+            <input id="aptLogo" placeholder="https://.../logo.png">
+        </div>
+        <div class="form-group">
             <label>Alamat</label>
             <input id="aptAddress" placeholder="Contoh: Jl. Bharata No 123">
         </div>
@@ -107,6 +111,7 @@ const db = firebase.database();
 db.ref('apartemen/settings').on('value', (snap) => {
     if(snap.exists()) {
         document.getElementById('aptName').value = snap.val().nama || '';
+        document.getElementById('aptLogo').value = snap.val().logo || '';
         document.getElementById('aptAddress').value = snap.val().alamat || '';
         document.getElementById('aptWallpaper').value = snap.val().wallpaper || '';
         document.getElementById('aptTicker').value = snap.val().ticker || '';
@@ -144,10 +149,11 @@ db.ref('apartemen/videos').on('value', (snap) => {
 
 function saveSettings() {
     let nama = document.getElementById('aptName').value;
+    let logo = document.getElementById('aptLogo').value;
     let alamat = document.getElementById('aptAddress').value;
     let wallpaper = document.getElementById('aptWallpaper').value;
     let ticker = document.getElementById('aptTicker').value;
-    db.ref('apartemen/settings').set({ nama, alamat, wallpaper, ticker }).then(() => alert("Pengaturan tersimpan!"));
+    db.ref('apartemen/settings').set({ nama, logo, alamat, wallpaper, ticker }).then(() => alert("Pengaturan tersimpan!"));
 }
 
 function saveColors() {
