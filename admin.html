@@ -35,6 +35,10 @@ h1,h3{color:#ffd700;margin-bottom:15px}
             <input id="aptAddress" placeholder="Contoh: Jl. Bharata No 123">
         </div>
         <div class="form-group">
+            <label>URL Wallpaper (Background belakang video)</label>
+            <input id="aptWallpaper" placeholder="https://.../gambar.jpg">
+        </div>
+        <div class="form-group">
             <label>Teks Berjalan (Running Text)</label>
             <textarea id="aptTicker" rows="3" placeholder="Contoh: Selamat datang..."></textarea>
         </div>
@@ -52,6 +56,10 @@ h1,h3{color:#ffd700;margin-bottom:15px}
             <input type="color" id="colorTextHeader" value="#ffd700">
         </div>
         <div class="color-row">
+            <label>Warna Teks Alamat</label>
+            <input type="color" id="colorAddress" value="#cccccc">
+        </div>
+        <div class="color-row">
             <label>Warna Border/Garis</label>
             <input type="color" id="colorAccent" value="#ffd700">
         </div>
@@ -67,10 +75,10 @@ h1,h3{color:#ffd700;margin-bottom:15px}
     </div>
 
     <div class="card">
-        <h3><i class="fab fa-youtube"></i> Daftar Video YouTube</h3>
+        <h3><i class="fas fa-film"></i> Daftar Video (YouTube / MP4)</h3>
         <div class="form-group">
-            <label>URL YouTube (Video biasa / Shorts)</label>
-            <input id="videoUrl" placeholder="https://youtube.com/watch?v=...">
+            <label>URL Video (Bisa link YouTube atau link .mp4 langsung)</label>
+            <input id="videoUrl" placeholder="https://youtube.com/watch?v=... atau https://.../video.mp4">
         </div>
         <button class="btn" onclick="addVideo()"><i class="fas fa-plus"></i> Tambah Video</button>
         <div id="videoList" style="margin-top:15px;"></div>
@@ -96,6 +104,7 @@ db.ref('apartemen/settings').on('value', (snap) => {
     if(snap.exists()) {
         document.getElementById('aptName').value = snap.val().nama || '';
         document.getElementById('aptAddress').value = snap.val().alamat || '';
+        document.getElementById('aptWallpaper').value = snap.val().wallpaper || '';
         document.getElementById('aptTicker').value = snap.val().ticker || '';
     }
 });
@@ -105,6 +114,7 @@ db.ref('apartemen/colors').on('value', (snap) => {
     if(snap.exists()) {
         document.getElementById('colorBgMain').value = snap.val().bg_main || '#000000';
         document.getElementById('colorTextHeader').value = snap.val().text_header || '#ffd700';
+        document.getElementById('colorAddress').value = snap.val().text_address || '#cccccc';
         document.getElementById('colorAccent').value = snap.val().accent || '#ffd700';
         document.getElementById('colorBgTicker').value = snap.val().bg_ticker || '#0a0a0a';
         document.getElementById('colorTextTicker').value = snap.val().text_ticker || '#ffffff';
@@ -130,14 +140,16 @@ db.ref('apartemen/videos').on('value', (snap) => {
 function saveSettings() {
     let nama = document.getElementById('aptName').value;
     let alamat = document.getElementById('aptAddress').value;
+    let wallpaper = document.getElementById('aptWallpaper').value;
     let ticker = document.getElementById('aptTicker').value;
-    db.ref('apartemen/settings').set({ nama, alamat, ticker }).then(() => alert("Pengaturan tersimpan!"));
+    db.ref('apartemen/settings').set({ nama, alamat, wallpaper, ticker }).then(() => alert("Pengaturan tersimpan!"));
 }
 
 function saveColors() {
     let colors = {
         bg_main: document.getElementById('colorBgMain').value,
         text_header: document.getElementById('colorTextHeader').value,
+        text_address: document.getElementById('colorAddress').value,
         accent: document.getElementById('colorAccent').value,
         bg_ticker: document.getElementById('colorBgTicker').value,
         text_ticker: document.getElementById('colorTextTicker').value
